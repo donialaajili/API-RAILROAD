@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { requireAuth, requireAdmin } = require('./authMiddleware');
+const { requireAuth, requireAdmin } = require('./authentification');
 const multer = require('multer');
 const sharp = require('sharp');
 const TrainStation = require('./models/TrainStation'); // Assuming you have a TrainStation model
