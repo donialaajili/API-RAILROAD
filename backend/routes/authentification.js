@@ -1,3 +1,13 @@
+const express = require('express');
+const router = express.Router();
+const { requireAuth, requireAdmin } = require('./authMiddleware');
+const multer = require('multer');
+const sharp = require('sharp');
+const TrainStation = require('./models/TrainStation');
+const User = require('./models/User');
+const jwt = require('jsonwebtoken');
+const { createCipheriv, createDecipheriv, randomBytes } = require('crypto');
+
 const upload = multer({
   limits: {
     fileSize: 10000000 // 10MB limit
@@ -82,6 +92,7 @@ router.post('/login', async (req, res) => {
 
 module.exports = router;
 
+
 const requireAdmin = (req, res, next) => {
     // Check if the user is an admin (customize this based on your user model)
     if (req.user && req.user.role === 'admin') {
@@ -89,9 +100,6 @@ const requireAdmin = (req, res, next) => {
     } else {
       return res.status(403).send('Permission denied. Admins only.');
     }
-  };
+};
   
-  module.exports = {
-    requireAuth,
-    requireAdmin
-  };
+export default {requireAdmin, requireAuth};
