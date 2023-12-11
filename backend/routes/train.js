@@ -1,6 +1,6 @@
 import express from 'express';
 import Train from '../models/Train.js';
-// import { requireAdmin } from './authentification.js';
+import { requireAdmin } from './authentification.js';
 
 const router = express.Router();
 

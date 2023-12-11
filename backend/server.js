@@ -24,10 +24,10 @@ const jwtOptions = {
 };
 
 passport.use(new JwtStrategy(jwtOptions, (payload, done) => {
-  // Check if user exists in the database based on payload information
-  // Example: User.findById(payload.sub, (err, user) => {
-  //   if (err) return done(err, false);
-  //   if (user) return done(null, user);
-  //   return done(null, false);
-  // });
+  // Check if user exists in the database based on payload information//
+   User.findById(payload.sub, (err, user) => {
+       if (err) return done(err, false);
+       if (user) return done(null, user);
+       return done(null, false);
+      });
 }));

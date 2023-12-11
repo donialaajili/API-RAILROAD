@@ -4,6 +4,7 @@ const { requireAuth, requireAdmin } = require('./authentification');
 const multer = require('multer');
 const sharp = require('sharp');
 const TrainStation = require('./models/TrainStation'); // Assuming you have a TrainStation model
+const trainStationController = require('./trainstation');
 
 // Multer setup for handling image uploads
 const upload = multer({
@@ -98,3 +99,68 @@ router.delete('/trainstations/:id', requireAuth, requireAdmin, async (req, res) 
 module.exports = router;
 
 
+
+// Endpoint pour lister toutes les gares et permettre le tri par nom
+router.get('/trainstations', async (req, res) => {
+  try {
+    let stations = await trainStationController.listTrainStations();
+    res.json(stations);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+});
+
+// Endpoint pour créer une gare (seulement pour les administrateurs)
+router.post('/trainstations', requireAuth, requireAdmin, upload.single('image'), async (req, res) => {
+  try {
+    const { name, open_hour, close_hour } = req.body;
+    const imageBuffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
+
+    const station = await trainStationController.createTrainStation(name, open_hour, close_hour, imageBuffer);
+
+    res.status(201).json(station);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+});
+
+// Endpoint pour mettre à jour une gare (seulement pour les administrateurs)
+router.put('/trainstations/:id', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, open_hour, close_hour } = req.body;
+
+    const station = await trainStationController.updateTrainStation(id, name, open_hour, close_hour);
+
+    if (!station) {
+      return res.status(404).send('Gare non trouvée');
+    }
+
+    res.json(station);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+});
+
+// Endpoint pour supprimer une gare (seulement pour les administrateurs)
+router.delete('/trainstations/:id', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const station = await trainStationController.deleteTrainStation(id);
+
+    if (!station) {
+      return res.status(404).send('Gare non trouvée');
+    }
+
+    res.json({ message: 'Gare supprimée avec succès' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+});
+
+module.exports = router;
