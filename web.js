@@ -3,6 +3,8 @@ import http from 'http';
 import express from 'express';
 import mongoose from 'mongoose';
 import { config } from 'dotenv';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './swagger.json' assert { type: 'json' };
 import trainRoutes from './backend/routes/train.js';
 import userRoutes from './backend/routes/user.js';
 
@@ -22,6 +24,7 @@ mongoose.connect(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${proc
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(cors());
 app.use('/api/trains', trainRoutes);
