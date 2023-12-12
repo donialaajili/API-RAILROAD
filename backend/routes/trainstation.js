@@ -1,3 +1,5 @@
+const express = require('express');
+const router = express.Router();
 const sharp = require('sharp');
 const TrainStation = require('./models/TrainStation'); // Supposons que vous ayez un modèle TrainStation
 

@@ -4,7 +4,7 @@ const { requireAuth, requireAdmin } = require('./authentification');
 const multer = require('multer');
 const sharp = require('sharp');
 const TrainStation = require('./models/TrainStation'); // Assuming you have a TrainStation model
-const trainStationController = require('./trainstation');
+const trainstation = require('./trainstation');
 
 // Multer setup for handling image uploads
 const upload = multer({
@@ -103,7 +103,7 @@ module.exports = router;
 // Endpoint pour lister toutes les gares et permettre le tri par nom
 router.get('/trainstations', async (req, res) => {
   try {
-    let stations = await trainStationController.listTrainStations();
+    let stations = await trainstation.listTrainStations();
     res.json(stations);
   } catch (error) {
     console.error(error);
@@ -117,7 +117,7 @@ router.post('/trainstations', requireAuth, requireAdmin, upload.single('image'),
     const { name, open_hour, close_hour } = req.body;
     const imageBuffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
 
-    const station = await trainStationController.createTrainStation(name, open_hour, close_hour, imageBuffer);
+    const station = await trainstation.createTrainStation(name, open_hour, close_hour, imageBuffer);
 
     res.status(201).json(station);
   } catch (error) {
@@ -132,7 +132,7 @@ router.put('/trainstations/:id', requireAuth, requireAdmin, async (req, res) => 
     const { id } = req.params;
     const { name, open_hour, close_hour } = req.body;
 
-    const station = await trainStationController.updateTrainStation(id, name, open_hour, close_hour);
+    const station = await trainstation.updateTrainStation(id, name, open_hour, close_hour);
 
     if (!station) {
       return res.status(404).send('Gare non trouvée');
@@ -150,7 +150,7 @@ router.delete('/trainstations/:id', requireAuth, requireAdmin, async (req, res) 
   try {
     const { id } = req.params;
 
-    const station = await trainStationController.deleteTrainStation(id);
+    const station = await trainstation.deleteTrainStation(id);
 
     if (!station) {
       return res.status(404).send('Gare non trouvée');
