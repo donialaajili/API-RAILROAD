@@ -22,6 +22,10 @@ mongoose.connect(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${proc
     console.error('Error connecting to the database: ', error);
 })
 
+// Utilisez les middlewares
+//app.use(authMiddleware.requireAuth);
+//app.use(authMiddleware.requireAdmin);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

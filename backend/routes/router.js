@@ -5,6 +5,7 @@ const multer = require('multer');
 const sharp = require('sharp');
 const TrainStation = require('./models/TrainStation'); // Assuming you have a TrainStation model
 const trainstation = require('./trainstation');
+import { verifyToken, requireRole } from './middlewares/verifyToken';
 
 // Multer setup for handling image uploads
 const upload = multer({
@@ -20,7 +21,7 @@ const upload = multer({
 });
 
 // Endpoint to list all train stations and allow sorting by name
-router.get('/trainstations', async (req, res) => {
+router.get('/trainstations', verifyToken, async (req, res) => {
   try {
     let stations = await TrainStation.find().sort({ name: 1 });
 
@@ -32,7 +33,7 @@ router.get('/trainstations', async (req, res) => {
 });
 
 // Endpoint to create a train station (only for admin)
-router.post('/trainstations', requireAuth, requireAdmin, upload.single('image'), async (req, res) => {
+router.post('/trainstations', verifyToken, requireAuth, requireAdmin, upload.single('image'), async (req, res) => {
   try {
     const { name, open_hour, close_hour } = req.body;
     const imageBuffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
@@ -54,7 +55,7 @@ router.post('/trainstations', requireAuth, requireAdmin, upload.single('image'),
 });
 
 // Endpoint to update a train station (only for admin)
-router.put('/trainstations/:id', requireAuth, requireAdmin, async (req, res) => {
+router.put('/trainstations/:id', verifyToken,  requireAuth, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, open_hour, close_hour } = req.body;
@@ -77,7 +78,7 @@ router.put('/trainstations/:id', requireAuth, requireAdmin, async (req, res) => 
 });
 
 // Endpoint to delete a train station (only for admin)
-router.delete('/trainstations/:id', requireAuth, requireAdmin, async (req, res) => {
+router.delete('/trainstations/:id', verifyToken, requireAuth, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -101,7 +102,7 @@ module.exports = router;
 
 
 // Endpoint pour lister toutes les gares et permettre le tri par nom
-router.get('/trainstations', async (req, res) => {
+router.get('/trainstations', verifyToken, async (req, res) => {
   try {
     let stations = await trainstation.listTrainStations();
     res.json(stations);
@@ -112,7 +113,7 @@ router.get('/trainstations', async (req, res) => {
 });
 
 // Endpoint pour créer une gare (seulement pour les administrateurs)
-router.post('/trainstations', requireAuth, requireAdmin, upload.single('image'), async (req, res) => {
+router.post('/trainstations', verifyToken, requireAuth, requireAdmin, upload.single('image'), async (req, res) => {
   try {
     const { name, open_hour, close_hour } = req.body;
     const imageBuffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
@@ -127,7 +128,7 @@ router.post('/trainstations', requireAuth, requireAdmin, upload.single('image'),
 });
 
 // Endpoint pour mettre à jour une gare (seulement pour les administrateurs)
-router.put('/trainstations/:id', requireAuth, requireAdmin, async (req, res) => {
+router.put('/trainstations/:id', verifyToken, requireAuth, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, open_hour, close_hour } = req.body;
@@ -146,7 +147,7 @@ router.put('/trainstations/:id', requireAuth, requireAdmin, async (req, res) => 
 });
 
 // Endpoint pour supprimer une gare (seulement pour les administrateurs)
-router.delete('/trainstations/:id', requireAuth, requireAdmin, async (req, res) => {
+router.delete('/trainstations/:id', verifyToken,  requireAuth, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -161,6 +162,19 @@ router.delete('/trainstations/:id', requireAuth, requireAdmin, async (req, res) 
     console.error(error);
     res.status(500).send(error.message);
   }
+});
+
+//utilisation de verifyToken pour toutes les routes
+router.use(verifyToken);
+
+// Route protégée pour les administrateurs
+router.get('/admin-route', verifyRole('admin'), (req, res) => {
+  res.json({ message: 'This is an admin route' });
+});
+
+// Route protégée pour les utilisateurs
+router.get('/user-route', verifyRole('user'), (req, res) => {
+  res.json({ message: 'This is a user route' });
 });
 
 module.exports = router;

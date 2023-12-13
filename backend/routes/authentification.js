@@ -20,12 +20,7 @@ const upload = multer({
   }
 });
 
-// ... (autres imports)
 
-// Endpoint pour créer une gare
-router.post('/trainstations', requireAuth, requireAdmin, upload.single('image'), async (req, res) => {
-  // ... (Code pour créer une gare)
-});
 
 // Endpoint pour s'inscrire
 router.post('/register', async (req, res) => {
