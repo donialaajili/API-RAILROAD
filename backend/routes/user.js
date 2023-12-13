@@ -1,10 +1,11 @@
 import express from 'express';
 import User from '../models/User.js';
+import { verifyToken, verifyTokenAndAuthorizationAndAdmin, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken.js';
 
 const router = express.Router();
 
 // Get all users
-router.get('/', async (req, res) => {
+router.get('/', verifyTokenAndAdmin, async (req, res) => {
     try {
         const users = await User.find();
         res.status(200).json(users);
@@ -15,7 +16,7 @@ router.get('/', async (req, res) => {
 });
 
 // Get a specific user by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', verifyTokenAndAuthorizationAndAdmin, async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -32,22 +33,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Create a new user
-router.post('/', (req, res) => {
-    const { username, email, password, role } = req.body;
-    const user = new User({ username, email, password, role });
-
-    user.save()
-        .then(data => {
-            res.status(200).json(data);
-        }).catch(err => {
-            console.log(err);
-            res.status(500).json({ response: 'Internal server error' });
-        });
-});
-
 // Update a user
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyTokenAndAuthorizationAndAdmin, async (req, res) => {
     const { id }  = req.params;
     const { username, email, password, role } = req.body;
 
@@ -70,7 +57,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a user by id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyTokenAndAuthorization, async (req, res) => {
     const { id }  = req.params;
 
     try {
@@ -88,7 +75,7 @@ router.delete('/:id', async (req, res) => {
 })
 
 // Endpoint to delete the user's own account
-router.delete('/delete-account', requireAuth, async (req, res) => {
+router.delete('/delete-account', verifyToken, async (req, res) => {
     const userIdToDelete = req.user._id; 
   
     try {
@@ -112,7 +99,7 @@ router.delete('/delete-account', requireAuth, async (req, res) => {
   });
 
  // Update user endpoint
-router.put('/update', requireAuth, async (req, res) => {
+router.put('/update', verifyToken, async (req, res) => {
     const { username, email } = req.body;
     const userId = req.user.id; 
   
@@ -142,7 +129,7 @@ router.put('/update', requireAuth, async (req, res) => {
   });
 
   // Get user information endpoint
-router.get('/info', requireAuth, async (req, res) => {
+router.get('/info', verifyToken, async (req, res) => {
     const userId = req.user.id; 
   
     try {

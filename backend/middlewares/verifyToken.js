@@ -1,6 +1,4 @@
 import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
-import TrainStation from "../models/TrainStation"; // Update with the correct path and model name
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -18,34 +16,29 @@ const verifyToken = (req, res, next) => {
     }
 };
 
-const verifyTokenAndAuthorization = (req, res, next) => {
-    verifyToken(req, res, async () => {
+const verifyTokenAndAuthorizationAndAdmin = (req, res, next) => {
+    verifyToken(req, res, () => {
         try {
-            
-            let authorized = false;
-            const stationId = req.params.id;
 
-            // Verify if the stationId is a valid ObjectId
-            if (!mongoose.Types.ObjectId.isValid(stationId)) {
-                return res.status(400).json("Invalid station ID!");
-            }
-
-            // Verify if the train station exists using your TrainStation model
-            const station = await TrainStation.findById(stationId);
-
-            if (req.user && req.user.role === 'admin') {
-                authorized = true;
-            } else if (req.params.id) {
-               
-                if (station && station.ownerId.toString() === req.user.id) {
-                    authorized = true;
-                }
-            }
-
-            if (authorized) {
+            if (verifyAdmin(req) || verifyAuthorization(req)) {
                 next();
             } else {
-                res.status(403).json("You are not allowed to do that!");
+                res.status(403).json("Permission denied.");
+            }
+        } catch (err) {
+            res.status(500).json({ response: 'Internal server error: ' + err.message });
+        }
+    });
+};
+
+const verifyTokenAndAuthorization = (req, res, next) => {
+    verifyToken(req, res, () => {
+        try {
+
+            if (verifyAuthorization(req)) {
+                next();
+            } else {
+                res.status(403).json("Permission denied.");
             }
         } catch (err) {
             res.status(500).json({ response: 'Internal server error: ' + err.message });
@@ -55,7 +48,7 @@ const verifyTokenAndAuthorization = (req, res, next) => {
 
 const verifyTokenAndAdmin = (req, res, next) => {
     verifyToken(req, res, () => {
-        if (req.user && req.user.role === 'admin') {
+        if (verifyAdmin(req)) {
             next();
         } else {
             res.status(403).json("Permission denied. Admins only.");
@@ -63,8 +56,17 @@ const verifyTokenAndAdmin = (req, res, next) => {
     });
 };
 
+const verifyAdmin = (req) => {
+    return  req.user.role === 'admin';
+};
+
+const verifyAuthorization = (req) => {
+    return req.user && req.params.id === req.user.id;
+};
+
 export {
     verifyToken,
+    verifyTokenAndAuthorizationAndAdmin,
     verifyTokenAndAuthorization,
     verifyTokenAndAdmin
 };
