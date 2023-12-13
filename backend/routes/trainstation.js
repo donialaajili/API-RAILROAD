@@ -1,79 +1,98 @@
 import express from 'express';
+import multer from 'multer';
 import TrainStation from '../models/TrainStation';
 
 const router = express.Router();
 
+// Multer setup for handling image uploads
+const upload = multer({
+  limits: {
+    fileSize: 10000000 // 10MB limit
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return cb(new Error('Please upload an image file'));
+    }
+    cb(undefined, true);
+  }
+});
+
+// Get all trainstations
 router.get('/', verifyTokenAndAdmin, async (req, res) => {
     try {
-        const trainstations = await TrainStation.find()
-        res.status(200).json(trainstations)
+        const trainstations = await TrainStation.find();
+        res.status(200).json(trainstations);
     } catch(err) {
-        res.status(500).json({ response: 'Internal server error' })
+        res.status(500).json({ response: 'Internal server error' });
     }
 })
 
-router.get('/:id', verifyTokenAndAuthorization, async (req, res) => {
-    try {
-        const trainstation = await TrainStation.findById(req.params.id)
-        res.status(200).json(trainstation)
-    } catch(err) {
-        res.status(500).json({ response: 'Internal server error' })
-    }
-})
+// Get a single trainstation by id
+router.get('/:id', (req, res) => {
+  const id = req.params.id;
 
-const listTrainStations = async () => {
-  try {
-    return await TrainStation.find().sort({ name: 1 });
-  } catch (error) {
-    console.error(error);
-    throw new Error('Erreur interne du serveur');
-  }
-};
+  TrainStation.findById(id)
+      .then(data => {
+          if (data) {
+              res.status(200).json(data);
+          } else {
+              res.status(400).json({ response: `Could not find trainstation with id ${id}` });
+          }
+      }).catch(err => {
+          console.log(err);
+          res.status(500).json({ response: 'Internal server error' });
+      });
+});
 
-const createTrainStation = async (name, open_hour, close_hour, imageBuffer) => {
-  try {
-    const station = new TrainStation({
-      name,
-      open_hour,
-      close_hour,
-      image: imageBuffer
-    });
+// Create a new trainstation
+router.post('/', verifyTokenAndAdmin, async(req, res) => {
+  const { name, open_hour, close_hour } = req.body;
+  const imageBuffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
+  const trainstation = new TrainStation({ name, open_hour, close_hour, image: imageBuffer });
 
-    await station.save();
+  trainstation.save()
+      .then(data => {
+          res.status(200).json(data);
+      }).catch(err => {
+          console.log(err);
+          res.status(500).json({ response: 'Internal server error' });
+      });
+});
 
-    return station;
-  } catch (error) {
-    console.error(error);
-    throw new Error('Erreur interne du serveur');
-  }
-};
+// Update a trainstation
+router.put('/:id', verifyTokenAndAdmin, async(req, res) => {
+  const id  = req.params.id;
+  const { name, open_hour, close_hour, image } = req.body;
+  const imageBuffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
 
-const updateTrainStation = async (id, name, open_hour, close_hour) => {
-  try {
-    return await TrainStation.findByIdAndUpdate(
-      id,
-      { name, open_hour, close_hour },
-      { new: true }
-    );
-  } catch (error) {
-    console.error(error);
-    throw new Error('Erreur interne du serveur');
-  }
-};
+  TrainStation.findByIdAndUpdate(id, { name, open_hour, close_hour, image: imageBuffer }, { new: true })
+      .then(data => {
+          if (data) {
+              res.status(200).json(data);
+          } else {
+              res.status(400).json({ response: `Could not find trainstation with id ${id}` });
+          }
+      }).catch(err => {
+          console.log(err);
+          res.status(500).json({ response: 'Internal server error' });
+      });
+});
 
-const deleteTrainStation = async (id) => {
-  try {
-    // Considérer la suppression des trains associés ou gérer en conséquence
-    return await TrainStation.findByIdAndDelete(id);
-  } catch (error) {
-    console.error(error);
-    throw new Error('Erreur interne du serveur');
-  }
-};
+// Delete a trainstation by id
+router.delete('/:id', verifyTokenAndAdmin, (req, res) => {
+  const id  = req.params.id;
 
-module.exports = {
-  listTrainStations,
-  createTrainStation,
-  updateTrainStation,
-  deleteTrainStation
-};
+  TrainStation.findByIdAndDelete(id)
+      .then(data => {
+          if (data) {
+              res.status(200).json({ response: `Trainstation with id ${id} has been deleted` });
+          } else {
+              res.status(400).json({ response: `Could not find trainstation with id ${id}` });
+          }
+      }).catch(err => {
+          console.log(err);
+          res.status(500).json({ response: 'Internal server error' });
+      });
+});
+
+export default router;
