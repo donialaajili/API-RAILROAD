@@ -1,6 +1,6 @@
 import express from 'express';
 import Train from '../models/Train.js';
-//import { requireAdmin } from './authentification.js';
+import { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken';
 
 const router = express.Router();
 
@@ -62,7 +62,7 @@ router.get('/:id', (req, res) => {
 });
 
 // Create a new train
-router.post('/', (req, res) => {
+router.post('/', verifyTokenAndAdmin, (req, res) => {
     const { name, start_station, end_station, time_of_departure } = req.body;
     const train = new Train({ name, start_station, end_station, time_of_departure });
 
@@ -76,7 +76,7 @@ router.post('/', (req, res) => {
 });
 
 // Update a train
-router.put('/:id', (req, res) => {
+router.put('/:id', verifyTokenAndAdmin, (req, res) => {
     const id  = req.params.id;
     const { name, start_station, end_station, time_of_departure } = req.body;
 
@@ -94,7 +94,7 @@ router.put('/:id', (req, res) => {
 });
 
 // Delete a train by id
-router.delete('/:id', (req, res) => {
+router.delete('/:id', verifyTokenAndAdmin, (req, res) => {
     const id  = req.params.id;
 
     Train.findByIdAndDelete(id)

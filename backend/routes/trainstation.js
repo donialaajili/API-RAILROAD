@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import TrainStation from '../models/TrainStation';
+import { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken';
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ const upload = multer({
 });
 
 // Get all trainstations
-router.get('/', verifyTokenAndAdmin, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const trainstations = await TrainStation.find();
         res.status(200).json(trainstations);
