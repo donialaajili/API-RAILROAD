@@ -33,7 +33,7 @@ const verifyTokenAndAuthorization = (req, res, next) => {
             // Verify if the train station exists using your TrainStation model
             const station = await TrainStation.findById(stationId);
 
-            if (req.user.isAdmin) {
+            if (req.user && req.user.role === 'admin') {
                 authorized = true;
             } else if (req.params.id) {
                
