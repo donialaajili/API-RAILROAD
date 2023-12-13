@@ -1,11 +1,7 @@
-const express = require('express');
+import express from 'express';
+import TrainStation from '../models/TrainStation';
+
 const router = express.Router();
-const sharp = require('sharp');
-const TrainStation = require('./models/TrainStation');
-
-
-
-
 
 router.get('/', verifyTokenAndAdmin, async (req, res) => {
     try {
@@ -16,7 +12,6 @@ router.get('/', verifyTokenAndAdmin, async (req, res) => {
     }
 })
 
-
 router.get('/:id', verifyTokenAndAuthorization, async (req, res) => {
     try {
         const trainstation = await TrainStation.findById(req.params.id)
@@ -25,13 +20,6 @@ router.get('/:id', verifyTokenAndAuthorization, async (req, res) => {
         res.status(500).json({ response: 'Internal server error' })
     }
 })
-
-
-
-
-
-
-
 
 const listTrainStations = async () => {
   try {
