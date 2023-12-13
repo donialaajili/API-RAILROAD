@@ -140,6 +140,33 @@ router.put('/update', requireAuth, async (req, res) => {
       res.status(500).json({ response: 'Internal server error' });
     }
   });
+
+  // Get user information endpoint
+router.get('/info', requireAuth, async (req, res) => {
+    const userId = req.user.id; 
+  
+    try {
+      const user = await User.findById(userId);
+  
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      
+      if (req.user.role === 'admin') {
+        
+        return res.status(200).json(user);
+      } else {
+        
+        const { _id, username, email } = user;
+        return res.status(200).json({ _id, username, email });
+      }
+    } catch (error) {
+      console.error('Error getting user information', error);
+      res.status(500).json({ response: 'Internal server error' });
+    }
+  });
+  
    
 
 export default router;
