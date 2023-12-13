@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
-import TrainStation from "../models/TrainStation"; 
+import TrainStation from "../models/TrainStation"; // Update with the correct path and model name
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -33,7 +33,7 @@ const verifyTokenAndAuthorization = (req, res, next) => {
             // Verify if the train station exists using your TrainStation model
             const station = await TrainStation.findById(stationId);
 
-            if (req.user.isAdmin) {
+            if (req.user && req.user.role === 'admin') {
                 authorized = true;
             } else if (req.params.id) {
                
@@ -55,10 +55,10 @@ const verifyTokenAndAuthorization = (req, res, next) => {
 
 const verifyTokenAndAdmin = (req, res, next) => {
     verifyToken(req, res, () => {
-        if (req.user.isAdmin) {
+        if (req.user && req.user.role === 'admin') {
             next();
         } else {
-            res.status(403).json("You are not allowed to do that!");
+            res.status(403).json("Permission denied. Admins only.");
         }
     });
 };

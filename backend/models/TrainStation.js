@@ -18,7 +18,4 @@ const trainStationSchema = new mongoose.Schema({
   }
 });
 
-const TrainStation = mongoose.model('TrainStation', trainStationSchema);
-
-module.exports = TrainStation;
-
+export default mongoose.model('TrainStation', trainStationSchema);

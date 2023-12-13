@@ -1,7 +1,7 @@
-import express from 'express'
-import User from '../models/User.js'
+import express from 'express';
+import User from '../models/User.js';
 
-const router = express.Router()
+const router = express.Router();
 
 // Get all users
 router.get('/', async (req, res) => {
@@ -34,8 +34,8 @@ router.get('/:id', async (req, res) => {
 
 // Create a new user
 router.post('/', (req, res) => {
-    const { email, pseudo, password, role } = req.body;
-    const user = new User({ email, pseudo, password, role });
+    const { username, email, password, role } = req.body;
+    const user = new User({ username, email, password, role });
 
     user.save()
         .then(data => {
@@ -49,12 +49,12 @@ router.post('/', (req, res) => {
 // Update a user
 router.put('/:id', async (req, res) => {
     const { id }  = req.params;
-    const { email, pseudo, password, role } = req.body;
+    const { username, email, password, role } = req.body;
 
     try {
         const updatedUser = await User.findByIdAndUpdate(
             id,
-            { email, pseudo, password, role },
+            { username, email, password, role },
             { new: true }
         );
 

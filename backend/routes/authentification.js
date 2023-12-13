@@ -1,30 +1,13 @@
-const express = require('express');
+import express from 'express';
+import User from '../models/User.js';
+import jwt from 'jsonwebtoken';
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+
 const router = express.Router();
-const { requireAuth, requireAdmin } = require('./authMiddleware');
-const multer = require('multer');
-const sharp = require('sharp');
-const TrainStation = require('./models/TrainStation');
-const User = require('./models/User');
-const jwt = require('jsonwebtoken');
-const { createCipheriv, createDecipheriv, randomBytes } = require('crypto');
-
-const upload = multer({
-  limits: {
-    fileSize: 10000000 // 10MB limit
-  },
-  fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      return cb(new Error('Please upload an image file'));
-    }
-    cb(undefined, true);
-  }
-});
-
-
 
 // Endpoint pour s'inscrire
 router.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
 
   try {
     const iv = randomBytes(16);
@@ -36,7 +19,8 @@ router.post('/register', async (req, res) => {
       username,
       email,
       password: encryptedPassword,
-      iv: iv.toString('hex')
+      iv: iv.toString('hex'),
+      role
     });
 
     const savedUser = await newUser.save();
@@ -71,8 +55,8 @@ router.post('/login', async (req, res) => {
 
     const accessToken = jwt.sign(
       {
-        id: user._id,
-        isAdmin: user.isAdmin
+        role: user.role,
+        id: user._id
       },
       process.env.JWT_SEC,
       { expiresIn: '3d' }
@@ -85,16 +69,4 @@ router.post('/login', async (req, res) => {
   }
 });
 
-module.exports = router;
-
-
-const requireAdmin = (req, res, next) => {
-    // Check if the user is an admin (customize this based on your user model)
-    if (req.user && req.user.role === 'admin') {
-      return next();
-    } else {
-      return res.status(403).send('Permission denied. Admins only.');
-    }
-};
-  
-export default {requireAdmin, requireAuth};
+export default router;
