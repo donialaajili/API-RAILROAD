@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
-import TrainStation from "../models/TrainStation"; // Update with the correct path and model name
+import TrainStation from "../models/TrainStation"; 
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
