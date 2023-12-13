@@ -1,7 +1,9 @@
-import Ticket from './models/Ticket';
 import express from 'express';
+import Ticket from './models/Ticket';
 import Joi from 'joi';
+import { verifyToken, verifyTokenAndAuthorizationAndAdmin, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken.js';
 
+const router = express.Router();
 
 // Define the Joi schema for the ticket data
 const Ticket = Joi.object({
@@ -12,7 +14,7 @@ const Ticket = Joi.object({
   });
   
 
-router.post('/create-ticket', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
     try {
       // Validate the request body against the schema
       const { error, value } = Ticket.validate(req.body);

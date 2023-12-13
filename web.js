@@ -9,6 +9,7 @@ import trainRoutes from './backend/routes/train.js';
 import userRoutes from './backend/routes/user.js';
 import trainStationRoutes from './backend/routes/trainstation.js';
 import authRoutes from './backend/routes/authentification.js';
+import ticketRoutes from './backend/routes/ticket.js';
 
 const app = express();
 const PORT = 8080;
@@ -33,6 +34,7 @@ app.use('/api/trains', trainRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/trainstations', trainStationRoutes);
 app.use('/api/auth', authRoutes);
+app.use('api/tickets', ticketRoutes);
 
 server.listen(8080, () => {
     console.log(`Server started on port ${PORT}. API Documentation: http://localhost:${PORT}/api-docs/`);
