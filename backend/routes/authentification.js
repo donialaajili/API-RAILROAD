@@ -1,5 +1,5 @@
 import express from 'express';
-import User from '../models/User';
+import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
@@ -7,7 +7,7 @@ const router = express.Router();
 
 // Endpoint pour s'inscrire
 router.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
 
   try {
     const iv = randomBytes(16);
@@ -19,7 +19,8 @@ router.post('/register', async (req, res) => {
       username,
       email,
       password: encryptedPassword,
-      iv: iv.toString('hex')
+      iv: iv.toString('hex'),
+      role
     });
 
     const savedUser = await newUser.save();
@@ -54,8 +55,8 @@ router.post('/login', async (req, res) => {
 
     const accessToken = jwt.sign(
       {
-        id: user._id,
-        role: user.role
+        role: user.role,
+        id: user._id
       },
       process.env.JWT_SEC,
       { expiresIn: '3d' }

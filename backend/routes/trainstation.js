@@ -21,7 +21,7 @@ const upload = multer({
 // Get all trainstations
 router.get('/', async (req, res) => {
     try {
-        const trainstations = await TrainStation.find();
+        const trainstations = await TrainStation.find().sort({ name: 1 });
         res.status(200).json(trainstations);
     } catch(err) {
         res.status(500).json({ response: 'Internal server error' });
