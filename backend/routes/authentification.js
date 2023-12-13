@@ -1,24 +1,9 @@
 import express from 'express';
-import multer from 'multer';
 import User from '../models/User';
 import jwt from 'jsonwebtoken';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 const router = express.Router();
-
-const upload = multer({
-  limits: {
-    fileSize: 10000000 // 10MB limit
-  },
-  fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      return cb(new Error('Please upload an image file'));
-    }
-    cb(undefined, true);
-  }
-});
-
-
 
 // Endpoint pour s'inscrire
 router.post('/register', async (req, res) => {
@@ -70,7 +55,7 @@ router.post('/login', async (req, res) => {
     const accessToken = jwt.sign(
       {
         id: user._id,
-        isAdmin: user.isAdmin
+        role: user.role
       },
       process.env.JWT_SEC,
       { expiresIn: '3d' }
@@ -83,4 +68,4 @@ router.post('/login', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
