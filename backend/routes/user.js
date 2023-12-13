@@ -87,4 +87,59 @@ router.delete('/:id', async (req, res) => {
     }
 })
 
+// Endpoint to delete the user's own account
+router.delete('/delete-account', requireAuth, async (req, res) => {
+    const userIdToDelete = req.user._id; 
+  
+    try {
+      
+      if (userIdToDelete.toString() !== req.params.id) {
+        return res.status(403).json({ error: 'Permission denied. Cannot delete other users.' });
+      }
+  
+      
+      const deletedUser = await User.findByIdAndDelete(userIdToDelete);
+  
+      if (!deletedUser) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+  
+      res.json({ message: 'Account deleted successfully.' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error.' });
+    }
+  });
+
+ // Update user endpoint
+router.put('/update', requireAuth, async (req, res) => {
+    const { username, email } = req.body;
+    const userId = req.user.id; 
+  
+    try {
+      const user = await User.findById(userId);
+  
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      
+      if (req.user.role === 'admin' || req.user.id === userId) {
+        
+        user.username = username || user.username;
+        user.email = email || user.email;
+  
+        const updatedUser = await user.save();
+        res.status(200).json(updatedUser);
+      } else {
+        
+        return res.status(403).json({ error: 'Permission denied. Only admins or the user can update this account.' });
+      }
+    } catch (error) {
+      console.error('Error updating user', error);
+      res.status(500).json({ response: 'Internal server error' });
+    }
+  });
+   
+
 export default router;
