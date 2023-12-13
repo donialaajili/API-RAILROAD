@@ -1,6 +1,6 @@
 import express from 'express';
 import Train from '../models/Train.js';
-import { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken';
+import { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken.js';
 
 const router = express.Router();
 

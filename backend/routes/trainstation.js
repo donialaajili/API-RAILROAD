@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
-import TrainStation from '../models/TrainStation';
-import { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken';
+import TrainStation from '../models/TrainStation.js';
+import { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken.js';
 
 const router = express.Router();
 
