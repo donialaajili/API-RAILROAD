@@ -1,5 +1,5 @@
 import express from 'express';
-import Ticket from './models/Ticket';
+import Ticket from '../models/Ticket.js';
 import Joi from 'joi';
 import { verifyToken, verifyTokenAndAuthorizationAndAdmin, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken.js';
 
@@ -17,7 +17,7 @@ const TicketSchema = Joi.object({
 router.post('/', verifyToken, async (req, res) => {
     try {
       // Validate the request body against the schema
-      const { error, value } = Ticket.validate(req.body);
+      const { error, value } = TicketSchema.validate(req.body);
   
       if (error) {
         // If validation fails, respond with a 400 Bad Request and error details

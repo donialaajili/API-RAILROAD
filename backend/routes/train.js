@@ -86,8 +86,19 @@ router.get('/:id', (req, res) => {
 
 // Create a new train
 router.post('/', verifyTokenAndAdmin, (req, res) => {
-    const { name, start_station, end_station, time_of_departure } = req.body;
-    const train = new Train({ name, start_station, end_station, time_of_departure });
+    const { error, value } = trainSchema.validate(req.body);
+
+    if (error) {
+        // If validation fails, respond with a 400 Bad Request and error details
+        return res.status(400).json({ error: error.details[0].message });
+      }
+
+    const train = new Train({ 
+        name: value.name, 
+        start_station: value.start_station,
+        end_station: value.end_station, 
+        time_of_departure: value.time_of_departure
+     });
 
     train.save()
         .then(data => {
@@ -101,9 +112,14 @@ router.post('/', verifyTokenAndAdmin, (req, res) => {
 // Update a train
 router.put('/:id', verifyTokenAndAdmin, (req, res) => {
     const id  = req.params.id;
-    const { name, start_station, end_station, time_of_departure } = req.body;
+    const { error, value } = trainSchema.validate(req.body);
 
-    Train.findByIdAndUpdate(id, { name, start_station, end_station, time_of_departure }, { new: true })
+    if (error) {
+        // If validation fails, respond with a 400 Bad Request and error details
+        return res.status(400).json({ error: error.details[0].message });
+      }
+
+    Train.findByIdAndUpdate(id, { name: value.name, start_station: value.start_station, end_station: value.end_station, time_of_departure: value.time_of_departure }, { new: true })
         .then(data => {
             if (data) {
                 res.status(200).json(data);
