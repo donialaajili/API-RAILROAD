@@ -216,7 +216,139 @@
             }
           }
         }
-      }
+      },
+      "/trainstation" : {
+        "get": {
+          "summary": "Get all train stations",
+          "parameters": [
+            {
+              "name": "sort",
+              "in": "query",
+              "description": "Sort order (asc/desc)",
+              "type": "string"
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "description": "Maximum number of products to return",
+              "type": "integer"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/TrainStation"
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        },
+        "post": {
+          "summary": "Add a new train station",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "description": "Train object",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Train"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Train station added successfully",
+              "schema": {
+                "$ref": "#/definitions/TrainStation"
+              }
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete all train station",
+          "responses": {
+            "200": {
+              "description": "train station deleted successfully"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/tickets": {
+        "post": {
+          "summary": "Book a new ticket",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "description": "Ticket object",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Ticket"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Ticket booked successfully",
+              "schema": {
+                "$ref": "#/definitions/Ticket"
+              }
+            },
+            "400": {
+              "description": "Bad request"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        },
+        "get": {
+          "summary": "Get all tickets",
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Ticket"
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+       
+      },
+      "securityDefinitions": {
+        "jwt": {
+          "type": "apiKey",
+          "name": "Authorization",
+          "in": "header"
+        }
+      },
+      "security": [
+        {
+          "jwt": []
+        }
+      ]
+    
+
+      
     },
     
     "definitions": {
@@ -270,7 +402,23 @@
             "type": "Buffer"
           }
         }
-      }
-
+      }, 
+      "Ticket": {
+        "type" : "object",
+        "properties": {
+          "start_station": {
+            "type": "string"
+          },
+          "end_station": {
+            "type": "string"
+          },
+          "date" : {
+            "type" : "Date"
+          },
+          "user" : {
+            "type": "mongoose.Schema.Types.ObjectId"
+          }
+        }
+      }    
     }
   }
