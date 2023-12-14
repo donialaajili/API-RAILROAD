@@ -7,7 +7,7 @@ const router = express.Router();
 // Get all trains
 router.get('/', async (req, res) => {
     const sortFields = req.query.sort ? req.query.sort.split(',') : [];
-    const limit = req.query.limit ? parseInt(req.query.limit) : 0;
+    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
     let query = Train.find();
 
     if (sortFields.length > 0) {
@@ -43,6 +43,8 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+
 
 // Get a single train by id
 router.get('/:id', (req, res) => {

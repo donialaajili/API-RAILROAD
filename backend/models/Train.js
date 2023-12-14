@@ -8,10 +8,12 @@ const TrainSchema = new mongoose.Schema({
   },
   start_station: {
     type: String,
+    ref: 'station',
     required: true
   },
   end_station: {
     type: String,
+    ref: 'station',
     required: true
   },
   time_of_departure: {
