@@ -1,6 +1,7 @@
 import express from 'express';
 import Train from '../models/Train.js';
 import { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken.js';
+import Joi from 'joi';
 
 const router = express.Router();
 
@@ -43,6 +44,26 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+// Définissez un schéma Joi pour les données de train
+const Train = Joi.object({
+    name: Joi.string().required(),
+    start_station: Joi.string().required(),
+    end_station: Joi.string().required(),
+    time_of_departure: Joi.date().iso().required(),
+    // Ajoutez d'autres champs pertinents pour la validation
+  });
+  
+  // Endpoint pour créer un nouveau train
+ // router.post('/trains', async (req, res) => {
+    // Validez les données du corps de la requête par rapport au schéma
+  //  const { error, value } = trainSchema.validate(req.body);
+  
+   // if (error) {
+      // Si la validation échoue, renvoyez une réponse d'erreur
+  //    return handleValidationError(res, error);
+  //  }
+  
 
 
 

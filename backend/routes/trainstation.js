@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import TrainStation from '../models/TrainStation.js';
+import Joi from 'joi';
 import { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken.js';
 
 const router = express.Router();
@@ -17,6 +18,23 @@ const upload = multer({
     cb(undefined, true);
   }
 });
+
+const TrainStation = Joi.object({
+    name: Joi.string().required(),
+    open_hour: Joi.string().required(),
+    close_hour: Joi.string().required(),
+    // ... autres champs pertinents
+  });
+  
+  //router.post('/trainstations', requireAuth, requireAdmin, async (req, res) => {
+  //  const { error, value } = trainStationSchema.validate(req.body);
+  
+  //  if (error) {
+  //    return handleValidationError(res, error);
+  //  }
+  
+   
+//});
 
 // Get all trainstations
 router.get('/', async (req, res) => {
@@ -95,5 +113,7 @@ router.delete('/:id', verifyTokenAndAdmin, (req, res) => {
           res.status(500).json({ response: 'Internal server error' });
       });
 });
+
+
 
 export default router;

@@ -1,8 +1,26 @@
 import express from 'express';
 import User from '../models/User.js';
 import { verifyToken, verifyTokenAndAuthorizationAndAdmin, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken.js';
+import Joi from 'joi';
 
 const router = express.Router();
+
+const User = Joi.object({
+    username: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+    // ... autres champs pertinents
+  });
+  
+ // router.post('/register', async (req, res) => {
+ //   const { error, value } = userSchema.validate(req.body);
+  
+ //   if (error) {
+ //     return handleValidationError(res, error);
+ //   }
+  
+    
+ // });
 
 // Get all users
 router.get('/', verifyTokenAndAdmin, async (req, res) => {
