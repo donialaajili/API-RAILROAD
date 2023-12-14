@@ -6,11 +6,11 @@ import { verifyToken, verifyTokenAndAuthorizationAndAdmin, verifyTokenAndAuthori
 const router = express.Router();
 
 // Define the Joi schema for the ticket data
-const Ticket = Joi.object({
+const TicketSchema = Joi.object({
     startStation: Joi.string().required(),
     endStation: Joi.string().required(),
     date: Joi.date().iso().required(),
-    // Add other relevant fields to validate
+    
   });
   
 

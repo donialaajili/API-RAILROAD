@@ -46,12 +46,12 @@ router.get('/', async (req, res) => {
 });
 
 // Définissez un schéma Joi pour les données de train
-const Train = Joi.object({
+const trainSchema = Joi.object({
     name: Joi.string().required(),
     start_station: Joi.string().required(),
     end_station: Joi.string().required(),
     time_of_departure: Joi.date().iso().required(),
-    // Ajoutez d'autres champs pertinents pour la validation
+    
   });
   
   // Endpoint pour créer un nouveau train

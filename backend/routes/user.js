@@ -5,11 +5,10 @@ import Joi from 'joi';
 
 const router = express.Router();
 
-const User = Joi.object({
+const userSchema = Joi.object({
     username: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
-    // ... autres champs pertinents
   });
   
  // router.post('/register', async (req, res) => {

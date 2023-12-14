@@ -19,11 +19,11 @@ const upload = multer({
   }
 });
 
-const TrainStation = Joi.object({
+const trainStationSchema = Joi.object({
     name: Joi.string().required(),
     open_hour: Joi.string().required(),
     close_hour: Joi.string().required(),
-    // ... autres champs pertinents
+    
   });
   
   //router.post('/trainstations', requireAuth, requireAdmin, async (req, res) => {
