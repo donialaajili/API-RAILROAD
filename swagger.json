@@ -1,187 +1,213 @@
 {
-    "swagger": "2.0",
-    "info": {
-      "title": "Railroad API",
-      "version": "1.0.0"
-    },
-    "basePath": "/api",
-    "securityDefinitions": {
-      "jwt": {
-        "type": "apiKey",
-        "name": "Authorization",
-        "in": "header"
-      }
-    },
-    "security": [
-      {
-        "jwt": []
-      }
-    ],
-    "paths": {
-      "/users": {
-        "get": {
-          "summary": "Get all users",
-          "responses": {
-            "200": {
-              "description": "Successful response",
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/User"
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error"
-            }
-          }
-        },
-        "post": {
-          "summary": "Create a new user",
-          "parameters": [
-            {
-              "name": "body",
-              "in": "body",
-              "description": "User object",
-              "required": true,
-              "schema": {
+  "swagger": "2.0",
+  "info": {
+    "title": "Railroad API",
+    "version": "1.0.0"
+  },
+  "basePath": "/api",
+  "securityDefinitions": {
+    "jwt": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "jwt": []
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Get all users",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
                 "$ref": "#/definitions/User"
               }
             }
-          ],
-          "responses": {
-            "201": {
-              "description": "User created successfully",
-              "schema": {
-                "$ref": "#/definitions/User"
-              }
-            },
-            "500": {
-              "description": "Internal server error"
-            }
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       },
-      "/users/{userId}": {
-        "get": {
-          "summary": "Get a user by ID",
-          "parameters": [
-            {
-              "name": "userId",
-              "in": "path",
-              "description": "User ID",
-              "required": true,
-              "type": "string"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Successful response",
-              "schema": {
-                "$ref": "#/definitions/User"
-              }
-            },
-            "404": {
-              "description": "User not found"
-            },
-            "500": {
-              "description": "Internal server error"
+      "post": {
+        "summary": "Create a new user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "User object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
             }
           }
-        },
+        ],
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "summary": "Get a user by ID",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User ID",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a user",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User ID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Updated user object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a user",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User ID",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/trains": {
+      "get": {
+        "summary": "Get all trains",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sort order (asc/desc)",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of products to return",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Train"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a new train",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Train object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Train"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Train added successfully",
+            "schema": {
+              "$ref": "#/definitions/Train"
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "/train/{ticketId}": {
         "put": {
-          "summary": "Update a user",
-          "parameters": [
-            {
-              "name": "userId",
-              "in": "path",
-              "description": "User ID",
-              "required": true,
-              "type": "string"
-            },
-            {
-              "name": "body",
-              "in": "body",
-              "description": "Updated user object",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/User"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "User updated successfully",
-              "schema": {
-                "$ref": "#/definitions/User"
-              }
-            },
-            "404": {
-              "description": "User not found"
-            },
-            "500": {
-              "description": "Internal server error"
-            }
-          }
-        },
-        "delete": {
-          "summary": "Delete a user",
-          "parameters": [
-            {
-              "name": "userId",
-              "in": "path",
-              "description": "User ID",
-              "required": true,
-              "type": "string"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "User deleted successfully"
-            },
-            "404": {
-              "description": "User not found"
-            },
-            "500": {
-              "description": "Internal server error"
-            }
-          }
-        }
-      },
-      "/trains": {
-        "get": {
-          "summary": "Get all trains",
-          "parameters": [
-            {
-              "name": "sort",
-              "in": "query",
-              "description": "Sort order (asc/desc)",
-              "type": "string"
-            },
-            {
-              "name": "limit",
-              "in": "query",
-              "description": "Maximum number of products to return",
-              "type": "integer"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Successful response",
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Train"
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error"
-            }
-          }
-        },
-        "post": {
-          "summary": "Add a new train",
+          "summary": "Update a train",
           "parameters": [
             {
               "name": "body",
@@ -195,116 +221,9 @@
           ],
           "responses": {
             "201": {
-              "description": "Train added successfully",
+              "description": "Train updated successfully",
               "schema": {
                 "$ref": "#/definitions/Train"
-              }
-            },
-            "500": {
-              "description": "Internal server error"
-            }
-          }
-        },
-        "delete": {
-          "summary": "Delete all products",
-          "responses": {
-            "200": {
-              "description": "Products deleted successfully"
-            },
-            "500": {
-              "description": "Internal server error"
-            }
-          }
-        }
-      },
-      "/trainstation" : {
-        "get": {
-          "summary": "Get all train stations",
-          "parameters": [
-            {
-              "name": "sort",
-              "in": "query",
-              "description": "Sort order (asc/desc)",
-              "type": "string"
-            },
-            {
-              "name": "limit",
-              "in": "query",
-              "description": "Maximum number of products to return",
-              "type": "integer"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Successful response",
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/TrainStation"
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error"
-            }
-          }
-        },
-        "post": {
-          "summary": "Add a new train station",
-          "parameters": [
-            {
-              "name": "body",
-              "in": "body",
-              "description": "Train object",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/Train"
-              }
-            }
-          ],
-          "responses": {
-            "201": {
-              "description": "Train station added successfully",
-              "schema": {
-                "$ref": "#/definitions/TrainStation"
-              }
-            },
-            "500": {
-              "description": "Internal server error"
-            }
-          }
-        },
-        "delete": {
-          "summary": "Delete all train station",
-          "responses": {
-            "200": {
-              "description": "train station deleted successfully"
-            },
-            "500": {
-              "description": "Internal server error"
-            }
-          }
-        }
-      },
-      "/tickets": {
-        "post": {
-          "summary": "Book a new ticket",
-          "parameters": [
-            {
-              "name": "body",
-              "in": "body",
-              "description": "Ticket object",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/Ticket"
-              }
-            }
-          ],
-          "responses": {
-            "201": {
-              "description": "Ticket booked successfully",
-              "schema": {
-                "$ref": "#/definitions/Ticket"
               }
             },
             "400": {
@@ -316,14 +235,14 @@
           }
         },
         "get": {
-          "summary": "Get all tickets",
+          "summary": "Get one train",
           "responses": {
             "200": {
               "description": "Successful response",
               "schema": {
-                "type": "array",
+                "type": "object",
                 "items": {
-                  "$ref": "#/definitions/Ticket"
+                  "$ref": "#/definitions/Train"
                 }
               }
             },
@@ -331,94 +250,307 @@
               "description": "Internal server error"
             }
           }
+        },
+        "delete": {
+          "summary": "Delete a train",
+          "responses": {
+            "200": {
+              "description": "train deleted successfully"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
         }
-       
-      },
-      "securityDefinitions": {
-        "jwt": {
-          "type": "apiKey",
-          "name": "Authorization",
-          "in": "header"
-        }
-      },
-      "security": [
-        {
-          "jwt": []
-        }
-      ]
-    
-
-      
+      }
     },
-    
-    "definitions": {
-      "User": {
-        "type": "object",
-        "properties": {
-          "email": {
+    "/trainstation": {
+      "get": {
+        "summary": "Get all train stations",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sort order (asc/desc)",
             "type": "string"
           },
-          "pseudo": {
-            "type": "string"
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of products to return",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TrainStation"
+              }
+            }
           },
-          "password": {
-            "type": "string"
-          },
-          "role": {
-            "type": "string"
+          "500": {
+            "description": "Internal server error"
           }
         }
       },
-      "Train": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
+      "post": {
+        "summary": "Add a new train station",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Train object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Train"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Train station added successfully",
+            "schema": {
+              "$ref": "#/definitions/TrainStation"
+            }
           },
-          "start_station": {
-            "type": "string"
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/trainstation/{ticketId}": {
+      "put": {
+        "summary": "Update a trainstation",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "TrainStation object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TrainStation"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Trainstation updated successfully",
+            "schema": {
+              "$ref": "#/definitions/TrainStation"
+            }
           },
-          "end_station": {
-            "type": "string"
+          "400": {
+            "description": "Bad request"
           },
-          "time_of_departure": {
-            "type": "Date"
+          "500": {
+            "description": "Internal server error"
           }
         }
       },
-      "TrainStation": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
+      "get": {
+        "summary": "Get one trainstation",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/TrainStation"
+              }
+            }
           },
-          "open_hour": {
-            "type": "string"
-          },
-          "close_hour": {
-            "type": "string"
-          },
-          "image": {
-            "type": "Buffer"
+          "500": {
+            "description": "Internal server error"
           }
         }
-      }, 
-      "Ticket": {
-        "type" : "object",
-        "properties": {
-          "start_station": {
-            "type": "string"
+      },
+      "delete": {
+        "summary": "Delete a trainstation",
+        "responses": {
+          "200": {
+            "description": "trainstation deleted successfully"
           },
-          "end_station": {
-            "type": "string"
-          },
-          "date" : {
-            "type" : "Date"
-          },
-          "user" : {
-            "type": "mongoose.Schema.Types.ObjectId"
+          "500": {
+            "description": "Internal server error"
           }
         }
-      }    
+      }
+    },
+    "/tickets": {
+      "post": {
+        "summary": "Book a new ticket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Ticket object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Ticket"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Ticket booked successfully",
+            "schema": {
+              "$ref": "#/definitions/Ticket"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all tickets",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Ticket"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/tickets/{ticketId}": {
+      "put": {
+        "summary": "Update a ticket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Ticket object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Ticket"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Ticket booked successfully",
+            "schema": {
+              "$ref": "#/definitions/Ticket"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get one ticket",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Ticket"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a ticket",
+        "responses": {
+          "200": {
+            "description": "ticket deleted successfully"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        }
+      }
+    },
+    "Train": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "start_station": {
+          "type": "mongoose.Schema.Types.ObjectId"
+        },
+        "end_station": {
+          "type": "mongoose.Schema.Types.ObjectId"
+        },
+        "time_of_departure": {
+          "type": "Date"
+        }
+      }
+    },
+    "TrainStation": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "open_hour": {
+          "type": "string"
+        },
+        "close_hour": {
+          "type": "string"
+        },
+        "image": {
+          "type": "Buffer"
+        }
+      }
+    },
+    "Ticket": {
+      "type": "object",
+      "properties": {
+        "train": {
+          "type": "mongoose.Schema.Types.ObjectId"
+        },
+        "user": {
+          "type": "mongoose.Schema.Types.ObjectId"
+        },
+        "date": {
+          "type": "Date"
+        }
+      }
     }
   }
+}
