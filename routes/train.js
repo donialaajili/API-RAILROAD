@@ -50,22 +50,10 @@ const trainSchema = Joi.object({
     name: Joi.string().required(),
     start_station: Joi.string().required(),
     end_station: Joi.string().required(),
-    time_of_departure: Joi.date().iso().required(),
+    time_of_departure: Joi.date().iso().required()
     
   });
   
-  // Endpoint pour créer un nouveau train
- // router.post('/trains', async (req, res) => {
-    // Validez les données du corps de la requête par rapport au schéma
-  //  const { error, value } = trainSchema.validate(req.body);
-  
-   // if (error) {
-      // Si la validation échoue, renvoyez une réponse d'erreur
-  //    return handleValidationError(res, error);
-  //  }
-  
-
-
 
 // Get a single train by id
 router.get('/:id', (req, res) => {

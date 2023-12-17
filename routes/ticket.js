@@ -7,9 +7,9 @@ const router = express.Router();
 
 // Define the Joi schema for the ticket data
 const TicketSchema = Joi.object({
-    startStation: Joi.string().required(),
-    endStation: Joi.string().required(),
-    date: Joi.date().iso().required(),
+    train: Joi.string().required(),
+    user: Joi.string().required(),
+    date: Joi.date().iso().required()
     
   });
   
@@ -26,10 +26,9 @@ router.post('/', verifyToken, async (req, res) => {
   
       // If validation passes, create a new ticket using Mongoose
       const ticket = new Ticket({
-        startStation: value.startStation,
-        endStation: value.endStation,
-        date: value.date,
-        // Add other relevant fields to create
+        train: value.train,
+        user: value.user,
+        date: value.date
       });
   
       // Save the ticket to the database

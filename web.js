@@ -30,11 +30,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(cors());
-app.use('/api/trains', trainRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/trainstations', trainStationRoutes);
 app.use('/api/auth', authRoutes);
-app.use('api/tickets', ticketRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/trains', trainRoutes);
+app.use('/api/trainstations', trainStationRoutes);
+app.use('/api/tickets', ticketRoutes);
 
 app.use(express.static('public'));
 

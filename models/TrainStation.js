@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 const trainStationSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   open_hour: {
     type: String,

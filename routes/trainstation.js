@@ -58,19 +58,29 @@ router.get('/:id', (req, res) => {
 // Create a new trainstation
 router.post('/', verifyTokenAndAdmin, upload.single('image'), async (req, res) => {
     const { error, value } = trainStationSchema.validate(req.body);
-    const imageBuffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
 
     if (error) {
         // If validation fails, respond with a 400 Bad Request and error details
         return res.status(400).json({ error: error.details[0].message });
     }
 
-    const trainstation = new TrainStation({
-        name: value.name,
-        open_hour: value.open_hour,
-        close_hour: value.close_hour,
-        image: imageBuffer
-    });
+
+
+    if (req.file != undefined) {
+        const imageBuffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
+        var trainstation = new TrainStation({
+            name: value.name,
+            open_hour: value.open_hour,
+            close_hour: value.close_hour,
+            image: imageBuffer
+        });
+    } else {
+        var trainstation = new TrainStation({
+            name: value.name,
+            open_hour: value.open_hour,
+            close_hour: value.close_hour
+        });
+    }
 
     trainstation.save()
         .then(data => {
@@ -85,14 +95,20 @@ router.post('/', verifyTokenAndAdmin, upload.single('image'), async (req, res) =
 router.put('/:id', verifyTokenAndAdmin, upload.single('image'), async (req, res) => {
     const id = req.params.id;
     const { error, value } = trainStationSchema.validate(req.body);
-    const imageBuffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
 
     if (error) {
         // If validation fails, respond with a 400 Bad Request and error details
         return res.status(400).json({ error: error.details[0].message });
     }
 
-    TrainStation.findByIdAndUpdate(id, { name: value.name, open_hour: value.open_hour, close_hour: value.close_hour, image: imageBuffer }, { new: true })
+    if(req.file != undefined) {
+        const imageBuffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
+        var updatedTrainstation = { name: value.name, open_hour: value.open_hour, close_hour: value.close_hour, image: imageBuffer };
+    } else {
+        var updatedTrainstation = { name: value.name, open_hour: value.open_hour, close_hour: value.close_hour };
+    }
+
+    TrainStation.findByIdAndUpdate(id, updatedTrainstation, { new: true })
         .then(data => {
             if (data) {
                 res.status(200).json(data);
