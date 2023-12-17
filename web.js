@@ -5,11 +5,11 @@ import mongoose from 'mongoose';
 import { config } from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger.json' assert { type: 'json' };
-import trainRoutes from './backend/routes/train.js';
-import userRoutes from './backend/routes/user.js';
-import trainStationRoutes from './backend/routes/trainstation.js';
-import authRoutes from './backend/routes/authentification.js';
-import ticketRoutes from './backend/routes/ticket.js';
+import trainRoutes from './routes/train.js';
+import userRoutes from './routes/user.js';
+import trainStationRoutes from './routes/trainstation.js';
+import authRoutes from './routes/authentification.js';
+import ticketRoutes from './routes/ticket.js';
 
 const app = express();
 const PORT = 8080;
