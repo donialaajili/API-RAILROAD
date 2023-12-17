@@ -5,7 +5,7 @@
   "main": "web.js",
   "scripts": {
     "test": "mocha tests/test-all.js",
-    "server": "nodemon web.js"
+    "server": "node web.js"
   },
   "author": "",
   "license": "ISC",
