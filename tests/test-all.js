@@ -6,6 +6,7 @@ import supertest from 'supertest';
 import User from '../models/User.js';
 import Train from '../models/Train.js';
 import TrainStation from '../models/TrainStation.js';
+import Ticket from '../models/Ticket.js';
 
 const request = supertest(app);
 chai.use(chaiHttp);
@@ -13,12 +14,15 @@ const expect = chai.expect;
 
 // Users variables
 let userCredentials;
+let secondUserCredential;
 let adminCredentials;
 
 let userToken;
+let secondUserToken;
 let adminToken;
 
 let normalUserId;
+let secondNormalUserId;
 let adminUserId;
 
 // Trainstations variables
@@ -37,6 +41,7 @@ let secondTrainId;
 
 // Tickets variables
 let ticketInformation;
+let ticketId;
 
 
 before(() => {
@@ -46,6 +51,13 @@ before(() => {
         username: "neo",
         email: "neo@mail.net",
         password: "aZerTy123",
+        role: "user"
+    };
+
+    secondUserCredential = {
+        username: "Bob",
+        email: "bob@mail.com",
+        password: "MdpTr3sR0busTe",
         role: "user"
     };
 
@@ -91,8 +103,9 @@ before(() => {
 
 // Users tests
 
-describe("User Registration & Login", () => {
-    it("should register a new user", async () => {
+describe("Users Registration & Login", () => {
+    // Create a user for test CRUD
+    it("should register a first new normal user", async () => {
         const response = await request
             .post("/api/auth/register")
             .send(userCredentials);
@@ -101,7 +114,17 @@ describe("User Registration & Login", () => {
         expect(response.body).to.have.property("username");
     });
 
-    it("should login a user and set token", async () => {
+    // Create a user for next tests
+    it("should register a second new normal user", async () => {
+        const response = await request
+            .post("/api/auth/register")
+            .send(secondUserCredential);
+
+        expect(response).to.have.status(201);
+        expect(response.body).to.have.property("username");
+    });
+
+    it("should login the first user and set token", async () => {
         const response = await request
             .post("/api/auth/login")
             .send({ username: userCredentials.username, password: userCredentials.password });
@@ -111,9 +134,21 @@ describe("User Registration & Login", () => {
 
         userToken = response.body.accessToken;
         normalUserId = response.body._id;
+    });
+
+    it("should login the second user and set token", async () => {
+        const response = await request
+            .post("/api/auth/login")
+            .send({ username: secondUserCredential.username, password: secondUserCredential.password });
+
+        expect(response).to.have.status(200);
+        expect(response.body).to.have.property("accessToken");
+
+        secondUserToken = response.body.accessToken;
+        secondNormalUserId = response.body._id;
 
         // Initialize ticket information for next test
-        ticketInformation.user = normalUserId;
+        ticketInformation.user = secondNormalUserId;
     });
 });
 
@@ -221,7 +256,7 @@ describe("Create a trainstation", () => {
     it("should unauthorized normal user to create a trainstation", async () => {
         const response = await request
             .post("/api/trainstations/")
-            .set("authorization", `Bearer ${userToken}`)
+            .set("authorization", `Bearer ${secondUserToken}`)
             .send(firstTrainStationInformations);
 
         expect(response).to.have.status(403);
@@ -319,7 +354,7 @@ describe("Create trains", () => {
     it("should unauthorized normal user to create a train", async () => {
         const response = await request
             .post("/api/trains/")
-            .set("authorization", `Bearer ${userToken}`)
+            .set("authorization", `Bearer ${secondUserToken}`)
             .send(firstTrainInformations);
 
         expect(response).to.have.status(403);
@@ -413,8 +448,58 @@ describe("Create tickets", () => {
     it("should create a ticket by normal user", async () => {
         const response = await request
             .post("/api/tickets/")
-            .set("authorization", `Bearer ${userToken}`)
+            .set("authorization", `Bearer ${secondUserToken}`)
             .send(ticketInformation);
+        expect(response).to.have.status(200);
+
+        ticketId = response.body.ticket._id;
+    });
+});
+
+describe("Read tickets informations", () => {
+    it("should get one ticket", async () => {
+        const response = await request
+            .get(`/api/tickets/${ticketId}`)
+            .set("authorization", `Bearer ${adminToken}`);
+
+        expect(response).to.have.status(200);
+    });
+
+    it("should get all tickets", async () => {
+        const response = await request
+            .get("/api/tickets/")
+            .set("authorization", `Bearer ${adminToken}`);
+
+        expect(response).to.have.status(200);
+        expect(response.body).to.be.an("array");
+        expect(response.body.length).to.be.greaterThan(0);
+    });
+});
+
+describe("Update tickets informations", () => {
+    it("should update the ticket", async () => {
+        const updatedTicketData = {
+            train: ticketInformation.train,
+            user: ticketInformation.user,
+            date: "2024-10-02"
+        };
+
+        const response = await request
+            .put(`/api/tickets/${ticketId}`)
+            .set("authorization", `Bearer ${adminToken}`)
+            .send(updatedTicketData);
+
+        expect(response).to.have.status(200);
+        expect(response.body).to.have.property("date", "2024-10-02T00:00:00.000Z");
+    });
+});
+
+describe("Delete tickets", () => {
+    it("should delete the ticket", async () => {
+        const response = await request
+            .delete(`/api/tickets/${ticketId}`)
+            .set("authorization", `Bearer ${adminToken}`);
+
         expect(response).to.have.status(200);
     });
 });
@@ -423,5 +508,5 @@ after(async () => {
     await User.deleteMany({});
     await Train.deleteMany({});
     await TrainStation.deleteMany({});
-    await TrainStation.deleteMany({});
+    await Ticket.deleteMany({});
 });
