@@ -17,7 +17,8 @@ const upload = multer({
             return cb(new Error('Please upload an image file'));
         }
         cb(undefined, true);
-    }
+    },
+    storage: multer.memoryStorage() // Stocke les fichiers en mémoire 
 });
 
 const trainStationSchema = Joi.object({
@@ -55,7 +56,7 @@ router.get('/:id', (req, res) => {
 });
 
 // Create a new trainstation
-router.post('/', verifyTokenAndAdmin, async (req, res) => {
+router.post('/', verifyTokenAndAdmin, upload.single('image'), async (req, res) => {
     const { error, value } = trainStationSchema.validate(req.body);
     const imageBuffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
 
@@ -81,7 +82,7 @@ router.post('/', verifyTokenAndAdmin, async (req, res) => {
 });
 
 // Update a trainstation
-router.put('/:id', verifyTokenAndAdmin, async (req, res) => {
+router.put('/:id', verifyTokenAndAdmin, upload.single('image'), async (req, res) => {
     const id = req.params.id;
     const { error, value } = trainStationSchema.validate(req.body);
     const imageBuffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();

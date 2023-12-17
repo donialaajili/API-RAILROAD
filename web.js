@@ -36,6 +36,8 @@ app.use('/api/trainstations', trainStationRoutes);
 app.use('/api/auth', authRoutes);
 app.use('api/tickets', ticketRoutes);
 
+app.use(express.static('public'));
+
 server.listen(8080, () => {
     console.log(`Server started on port ${PORT}. API Documentation: http://localhost:${PORT}/api-docs/`);
 });
