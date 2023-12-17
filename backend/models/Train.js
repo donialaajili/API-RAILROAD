@@ -7,14 +7,14 @@ const TrainSchema = new mongoose.Schema({
     unique: true
   },
   start_station: {
-    type: String,
-    ref: 'station',
-    required: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'TrainStation',
+    required: true,
   },
   end_station: {
-    type: String,
-    ref: 'station',
-    required: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'TrainStation',
+    required: true,
   },
   time_of_departure: {
     type: Date,

@@ -1,16 +1,9 @@
 import mongoose from "mongoose";
 
 const ticketSchema = new mongoose.Schema({
-  startStation: {
-    type: String,
-    required: true,
-  },
-  endStation: {
-    type: String,
-    required: true,
-  },
-  date: {
-    type: Date,
+  train: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Train',
     required: true,
   },
  
@@ -18,6 +11,11 @@ const ticketSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User', 
   },
+
+  date: {
+    type: Date,
+    required: true,
+  }
 });
 
 
