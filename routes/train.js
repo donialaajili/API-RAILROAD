@@ -1,5 +1,6 @@
 import express from 'express';
 import Train from '../models/Train.js';
+import TrainStation from '../models/TrainStation.js';
 import { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken.js';
 import Joi from 'joi';
 
@@ -39,7 +40,7 @@ router.get('/', async (req, res) => {
     try {
         const data = await query.exec();
         res.status(200).json(data);
-    } catch(err) {
+    } catch (err) {
         console.error('Error getting trains: ', err);
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -51,15 +52,17 @@ const trainSchema = Joi.object({
     start_station: Joi.string().required(),
     end_station: Joi.string().required(),
     time_of_departure: Joi.date().iso().required()
-    
-  });
-  
+
+});
+
 
 // Get a single train by id
 router.get('/:id', (req, res) => {
     const id = req.params.id;
 
     Train.findById(id)
+        .populate('start_station')
+        .populate('end_station')
         .then(data => {
             if (data) {
                 res.status(200).json(data);
@@ -73,20 +76,32 @@ router.get('/:id', (req, res) => {
 });
 
 // Create a new train
-router.post('/', verifyTokenAndAdmin, (req, res) => {
+router.post('/', verifyTokenAndAdmin, async(req, res) => {
     const { error, value } = trainSchema.validate(req.body);
 
     if (error) {
         // If validation fails, respond with a 400 Bad Request and error details
         return res.status(400).json({ error: error.details[0].message });
-      }
+    }
 
-    const train = new Train({ 
-        name: value.name, 
+     // check if the start trainstation exist
+     const startTrainstation = await TrainStation.findById(value.start_station);
+     if (!startTrainstation) {
+         return res.status(404).json({ message: `Trainstation ${value.start_station} not found` });
+     }
+
+     // check if the end trainstation exist
+     const endTrainstation = await TrainStation.findById(value.end_station);
+     if (!endTrainstation) {
+         return res.status(404).json({ message: `Trainstation ${value.end_station} not found` });
+     }
+
+    const train = new Train({
+        name: value.name,
         start_station: value.start_station,
-        end_station: value.end_station, 
+        end_station: value.end_station,
         time_of_departure: value.time_of_departure
-     });
+    });
 
     train.save()
         .then(data => {
@@ -99,13 +114,13 @@ router.post('/', verifyTokenAndAdmin, (req, res) => {
 
 // Update a train
 router.put('/:id', verifyTokenAndAdmin, (req, res) => {
-    const id  = req.params.id;
+    const id = req.params.id;
     const { error, value } = trainSchema.validate(req.body);
 
     if (error) {
         // If validation fails, respond with a 400 Bad Request and error details
         return res.status(400).json({ error: error.details[0].message });
-      }
+    }
 
     Train.findByIdAndUpdate(id, { name: value.name, start_station: value.start_station, end_station: value.end_station, time_of_departure: value.time_of_departure }, { new: true })
         .then(data => {
@@ -122,7 +137,7 @@ router.put('/:id', verifyTokenAndAdmin, (req, res) => {
 
 // Delete a train by id
 router.delete('/:id', verifyTokenAndAdmin, (req, res) => {
-    const id  = req.params.id;
+    const id = req.params.id;
 
     Train.findByIdAndDelete(id)
         .then(data => {

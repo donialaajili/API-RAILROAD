@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import TrainStation from '../models/TrainStation.js';
+import Train from '../models/Train.js';
 import Joi from 'joi';
 import sharp from 'sharp';
 import { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin } from '../middlewares/verifyToken.js';
@@ -36,7 +37,7 @@ router.get('/', async (req, res) => {
     } catch (err) {
         res.status(500).json({ response: 'Internal server error' });
     }
-})
+});
 
 // Get a single trainstation by id
 router.get('/:id', (req, res) => {
@@ -91,7 +92,7 @@ router.post('/', verifyTokenAndAdmin, upload.single('image'), async (req, res) =
         });
 });
 
-// Update a trainstation
+// Update a trainstation by id
 router.put('/:id', verifyTokenAndAdmin, upload.single('image'), async (req, res) => {
     const id = req.params.id;
     const { error, value } = trainStationSchema.validate(req.body);
@@ -101,7 +102,7 @@ router.put('/:id', verifyTokenAndAdmin, upload.single('image'), async (req, res)
         return res.status(400).json({ error: error.details[0].message });
     }
 
-    if(req.file != undefined) {
+    if (req.file != undefined) {
         const imageBuffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
         var updatedTrainstation = { name: value.name, open_hour: value.open_hour, close_hour: value.close_hour, image: imageBuffer };
     } else {
@@ -122,8 +123,16 @@ router.put('/:id', verifyTokenAndAdmin, upload.single('image'), async (req, res)
 });
 
 // Delete a trainstation by id
-router.delete('/:id', verifyTokenAndAdmin, (req, res) => {
+router.delete('/:id', verifyTokenAndAdmin, async (req, res) => {
     const id = req.params.id;
+
+    // Check if trainstation is used by a train
+    const relatedTrains = await Train.find({ $or: [{ start_station: id }, { end_station: id }] });
+    if (relatedTrains.length > 0) {
+        return res.status(400).json({
+            message: "You can't delete this trainstation because it is used by one or more trains."
+        });
+    }
 
     TrainStation.findByIdAndDelete(id)
         .then(data => {
